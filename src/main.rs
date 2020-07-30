@@ -4,6 +4,7 @@
  * www.stephane-bressani.ch
  *
  * To do: Bot telegram notification or mail
+ *        Unit tests
  */
 // extern crate futures;
 // extern crate tokio;
@@ -52,7 +53,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 fn main() {
     // Ip range with arg
     // -> Todo
-
+    // For the begining just loop ip
+    let _addr_1 = std::net::Ipv4Addr::new(192, 168, 0, 1);
+    let _addr_2 = std::net::Ipv4Addr::new(192, 168, 0, 255);
     // Ping fn
     // 29.07 OK work but only with sudo
     /*
