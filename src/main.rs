@@ -82,6 +82,7 @@ fn main() {
             break;
         };
 
+        // Algo for Ipv4Addr
         if pos[3] == 255 {
             pos[3] = 0;
             if pos[2] == 255 {
