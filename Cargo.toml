@@ -10,9 +10,9 @@ edition = "2018"
 #futures = "0.3.5" and_then not work
 futures = "0.1"
 #tokio = "0.2.22"
-#tokio = "0.1"
+tokio = "0.1"
 tokio-ping = "0.3.0"
 hyper = "0.13"
 hyper-tls = "0.4.1"
-tokio = { version = "0.2", features = ["full"] }
+#tokio = { version = "0.2", features = ["full"] }
 hex = "0.4.2"
