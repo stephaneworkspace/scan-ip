@@ -6,12 +6,11 @@
  * To do: Bot telegram notification or mail
  *        Unit tests
  */
+extern crate dns_lookup;
 extern crate futures;
 extern crate hex;
 extern crate tokio;
-extern crate tokio_ping;
 
-use futures::{Future, Stream};
 use std::i64;
 use std::net::{IpAddr, Ipv4Addr};
 
@@ -78,12 +77,13 @@ fn check_private_range() {
         Ipv4Addr::new(192, 168, 0, 0),
         Ipv4Addr::new(192, 168, 0, 255),
     ]);
+    let mut ip: Vec<IpAddr> = Vec::new();
     for r in range {
         let mut pos: [u8; 4] = r[0].octets();
         let pos_final: [u8; 4] = r[1].octets();
         loop {
             let current_addr = Ipv4Addr::new(pos[0], pos[1], pos[2], pos[3]);
-            ping(IpAddr::V4(current_addr));
+            ip.push(IpAddr::V4(current_addr));
             let compare_1 = i64::from_str_radix(
                 hex::encode(vec![pos[0], pos[1], pos[2], pos[3]]).as_str(),
                 16,
@@ -118,23 +118,29 @@ fn check_private_range() {
             }
         }
     }
+    host_check(ip);
 }
 
-fn ping(ip: IpAddr) {
-    println!("{:?}", ip);
-    let pinger = tokio_ping::Pinger::new();
-    let stream = pinger.and_then(move |pinger| Ok(pinger.chain(ip).stream()));
-    let future = stream.and_then(|stream| {
-        stream.take(3).for_each(|mb_time| {
-            match mb_time {
-                Some(time) => println!("time={:?}", time),
-                None => println!("timeout"),
-            }
-            Ok(())
-        })
-    });
+/// Work with my home_web_addr
+/// ip = Vec::new();
+/// let home_web_addr = Ipv4Addr::new(164, 132, 99, 183);
+/// ip.push(IpAddr::V4(home_web_addr));
+/// host_check(ip);
 
-    tokio::run(future.map_err(|err| eprintln!("Error: {}", err)))
+fn host_check(ip: Vec<IpAddr>) {
+    for i in ip {
+        let mut sw_print: bool = false;
+        let addr_name = match dns_lookup::lookup_addr(&i) {
+            Ok(name) => {
+                sw_print = true;
+                name
+            }
+            Err(_) => i.to_string(),
+        };
+        if sw_print {
+            println!("{}", addr_name);
+        }
+    }
 }
 
 fn main() {
